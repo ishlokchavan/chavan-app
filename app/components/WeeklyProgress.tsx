@@ -28,10 +28,10 @@ export function WeeklyProgress({ records }: WeeklyProgressProps) {
       </h3>
       <div className="grid grid-cols-7 gap-2">
         {last7Days.map(({ date, record, dayLabel }) => (
-          <div key={date} className="text-center">
-            <p className="text-xs font-medium text-gray-600 mb-2">{dayLabel}</p>
+          <div key={date} className="flex flex-col items-center gap-2">
+            <p className="text-xs font-medium text-gray-600">{dayLabel}</p>
             <div
-              className={`h-14 rounded-lg border transition-all flex items-center justify-center font-semibold ${
+              className={`w-full aspect-square rounded-md border flex items-center justify-center font-semibold text-sm transition-all ${
                 record === undefined
                   ? 'border-gray-200 bg-gray-50 text-gray-400'
                   : record.isSuccessful

@@ -22,38 +22,39 @@ export function DailyTracker({ tasks, onToggleTask }: DailyTrackerProps) {
             day: 'numeric',
           })}
         </p>
-        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+        <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
       </div>
 
-      {/* Task Grid */}
+      {/* Task Grid - 2 columns */}
       <div className="grid grid-cols-2 gap-3">
         {tasks.map((task) => {
           const pillar = PILLARS.find((p) => p.id === task.id);
-          const examples = PILLAR_EXAMPLES[task.id];
 
           return (
             <button
               key={task.id}
               onClick={() => onToggleTask(task.id)}
-              className={`p-5 rounded-xl border transition-all duration-200 text-left group ${
+              className={`p-4 rounded-lg border transition-all duration-200 text-left min-h-[140px] flex flex-col justify-between ${
                 task.completed
                   ? 'border-gray-800 bg-gray-900 text-white'
-                  : 'border-gray-200 bg-gray-50 text-gray-900 hover:border-gray-400 hover:bg-white'
+                  : 'border-gray-200 bg-white text-gray-900 hover:border-gray-300'
               }`}
             >
-              <div className={`text-2xl mb-3 ${task.completed ? 'opacity-100' : 'opacity-80'}`}>
-                {pillar?.emoji}
+              <div className="space-y-3">
+                <div className="text-2xl">{pillar?.emoji}</div>
+                <div>
+                  <h3 className="font-semibold text-sm leading-tight">
+                    {pillar?.name}
+                  </h3>
+                </div>
               </div>
-              <h3 className="font-semibold text-sm leading-tight mb-3">
-                {pillar?.name}
-              </h3>
 
-              {/* Checkbox indicator */}
+              {/* Checkbox at bottom */}
               <div
                 className={`w-5 h-5 rounded-md border transition-all flex items-center justify-center ${
                   task.completed
                     ? 'bg-white border-white'
-                    : 'border-gray-300 bg-transparent group-hover:border-gray-400'
+                    : 'border-gray-300 bg-transparent'
                 }`}
               >
                 {task.completed && (
@@ -72,8 +73,8 @@ export function DailyTracker({ tasks, onToggleTask }: DailyTrackerProps) {
       </div>
 
       {/* Success Status */}
-      <div className="bg-gray-50 rounded-xl p-8 border border-gray-200 text-center">
-        <div className="text-5xl font-light mb-4">
+      <div className="bg-gray-50 rounded-lg p-8 border border-gray-200 text-center">
+        <div className="text-4xl font-light mb-3">
           {isSuccessful ? '✓' : '✗'}
         </div>
         <p className="text-lg font-semibold text-gray-900 mb-2">

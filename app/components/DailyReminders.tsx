@@ -21,7 +21,7 @@ export function DailyReminders() {
   if (!reminder) return null;
 
   return (
-    <div className="bg-gray-50 rounded-xl p-5 text-center border border-gray-200">
+    <div className="bg-gray-50 rounded-lg p-5 text-center border border-gray-200">
       <p className="text-sm text-gray-700 font-light">{reminder}</p>
     </div>
   );
