@@ -1,188 +1,147 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import { DailyTracker } from './components/DailyTracker';
-import { StreakCounter } from './components/StreakCounter';
+import { useState } from 'react';
+import { useAppData } from './hooks/useLocalStorage';
+import { togglePillar, todayKey, defaultRecord, pillarsCompleted, GameEvent } from './lib/storage';
+import { PILLARS, PillarId } from './types';
+import { Header } from './components/Header';
+import { StreakHero } from './components/StreakHero';
+import { XpBar } from './components/XpBar';
+import { PillarGrid } from './components/PillarGrid';
+import { DayStatus } from './components/DayStatus';
 import { WeeklyProgress } from './components/WeeklyProgress';
-import { IdentityStatement } from './components/IdentityStatement';
-import { DailyReminders } from './components/DailyReminders';
-import { AppData, DailyRecord } from './types';
-import {
-  getTodayDate,
-  calculateDaySuccess,
-  calculateStreak,
-  calculateTotalSuccessfulDays,
-  getDefaultAppData,
-  createEmptyTasks,
-} from './lib/storage';
+import { IdentityCreed } from './components/IdentityCreed';
+import { CelebrationModal } from './components/CelebrationModal';
+import { BottomNav } from './components/BottomNav';
 
-export default function Home() {
-  const [data, setData] = useLocalStorage<AppData>('chavan_data', getDefaultAppData());
-  const [todayRecord, setTodayRecord] = useState<DailyRecord | null>(null);
-  const [mounted, setMounted] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+export default function HomePage() {
+  const [data, update, hydrated] = useAppData();
+  const [celebration, setCelebration] = useState<{ show: boolean; xp: number; streak: number }>({
+    show: false,
+    xp: 0,
+    streak: 0,
+  });
 
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstallPrompt(true);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
+  const today = todayKey();
+  const todayRec = data.records[today] || defaultRecord(today);
+  const pillarState = todayRec.pillars;
+  const completed = pillarsCompleted(todayRec);
 
-  const handleInstall = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') setShowInstallPrompt(false);
-      setDeferredPrompt(null);
-    }
-  };
-
-  useEffect(() => {
-    setMounted(true);
-    const today = getTodayDate();
-    let currentData = { ...data };
-    let todayRec = currentData.records.find((r) => r.date === today);
-
-    if (!todayRec) {
-      todayRec = { date: today, tasks: createEmptyTasks(), isSuccessful: false };
-      currentData.records.push(todayRec);
-      setData(currentData);
-    }
-    setTodayRecord(todayRec);
-  }, []);
-
-  const handleToggleTask = (taskId: string) => {
-    const updated = { ...data };
-    const record = updated.records.find((r) => r.date === getTodayDate());
-    if (record) {
-      const task = record.tasks.find((t) => t.id === taskId);
-      if (task) {
-        task.completed = !task.completed;
-        task.completedAt = task.completed ? new Date().toISOString() : undefined;
-        record.isSuccessful = calculateDaySuccess(record.tasks);
-        updated.currentStreak = calculateStreak(updated.records);
-        updated.totalSuccessfulDays = calculateTotalSuccessfulDays(updated.records);
-        setData(updated);
-        setTodayRecord({ ...record });
+  function handleToggle(id: PillarId) {
+    let allEvents: GameEvent[] = [];
+    update(prev => {
+      const { data: next, events } = togglePillar(prev, id);
+      allEvents = events;
+      return next;
+    });
+    // Process events after state settles
+    setTimeout(() => {
+      const completeEvent = allEvents.find(e => e.type === 'day_complete');
+      if (completeEvent && completeEvent.type === 'day_complete') {
+        setCelebration({ show: true, xp: completeEvent.xp, streak: completeEvent.streak });
+        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+          navigator.vibrate([30, 50, 80]);
+        }
       }
-    }
-  };
+    }, 350);
+  }
 
-  if (!mounted || !todayRecord) {
+  // SSR guard — render skeleton until LocalStorage hydrates so server/client match
+  if (!hydrated) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100dvh' }}>
-        <div style={{
-          width: '24px', height: '24px',
-          borderRadius: '50%',
-          border: '2px solid var(--surface-high)',
-          borderTopColor: 'var(--amber)',
-          animation: 'spin 0.8s linear infinite',
-        }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </div>
+      <main style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+        <PhoneFrame>
+          <div style={{ padding: '56px 24px', opacity: 0.3 }}>
+            <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: 28, fontStyle: 'italic' }}>
+              chav<span style={{ color: 'var(--amber)' }}>a</span>n
+            </div>
+          </div>
+        </PhoneFrame>
+      </main>
     );
   }
 
   return (
-    <main style={{ minHeight: '100dvh', position: 'relative', zIndex: 1 }}>
-      {/* Header */}
-      <header style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 40,
-        background: 'rgba(26,23,20,0.9)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: '1px solid var(--surface-raised)',
-      }}>
-        <div style={{
-          maxWidth: '480px',
-          margin: '0 auto',
-          padding: '16px 20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-          <div>
-            <h1 className="font-serif" style={{
-              fontSize: '22px',
-              color: 'var(--parchment)',
-              letterSpacing: '0.01em',
-              lineHeight: 1,
-            }}>
-              Chavan
-            </h1>
-            <p style={{
-              fontSize: '10px',
-              color: 'var(--warm-mid)',
-              marginTop: '2px',
-              letterSpacing: '0.08em',
-              fontWeight: 300,
-            }}>
-              Daily framework
-            </p>
-          </div>
-
-          {showInstallPrompt && (
-            <button
-              onClick={handleInstall}
-              style={{
-                padding: '8px 14px',
-                borderRadius: '8px',
-                background: 'var(--amber)',
-                color: 'var(--ink)',
-                fontSize: '12px',
-                fontWeight: 600,
-                border: 'none',
-                cursor: 'pointer',
-                letterSpacing: '0.02em',
-              }}
-            >
-              Install
-            </button>
-          )}
+    <main
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+      }}
+    >
+      <PhoneFrame>
+        <div
+          className="no-scrollbar"
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            flex: 1,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            padding: '56px 24px 140px',
+          }}
+        >
+          <Header totalXp={data.totalXp} />
+          <StreakHero currentStreak={data.currentStreak} bestStreak={data.bestStreak} />
+          <XpBar totalXp={data.totalXp} />
+          <PillarGrid pillars={PILLARS} state={pillarState} onToggle={handleToggle} />
+          <DayStatus completed={completed} />
+          <WeeklyProgress records={data.records} />
+          <IdentityCreed activeCreedLevel={data.activeCreedLevel} />
         </div>
-      </header>
+        <BottomNav />
+      </PhoneFrame>
 
-      {/* Content */}
-      <div style={{
-        maxWidth: '480px',
-        margin: '0 auto',
-        padding: '24px 20px 48px',
+      <CelebrationModal
+        show={celebration.show}
+        xp={celebration.xp}
+        streak={celebration.streak}
+        onClose={() => setCelebration(c => ({ ...c, show: false }))}
+      />
+    </main>
+  );
+}
+
+function PhoneFrame({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        width: '100%',
+        maxWidth: 480,
+        minHeight: '100vh',
+        background: 'var(--bg)',
+        position: 'relative',
+        overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px',
-      }}>
-        <DailyReminders />
-        <DailyTracker tasks={todayRecord.tasks} onToggleTask={handleToggleTask} />
-
-        {/* Divider */}
-        <div className="divider" />
-
-        <StreakCounter
-          currentStreak={data.currentStreak}
-          totalSuccessfulDays={data.totalSuccessfulDays}
-        />
-        <WeeklyProgress records={data.records} />
-        <IdentityStatement />
-
-        {/* Footer */}
-        <p style={{
-          textAlign: 'center',
-          fontSize: '11px',
-          color: 'var(--surface-high)',
-          paddingTop: '8px',
-          letterSpacing: '0.06em',
-        }}>
-          © 2026 Chavan
-        </p>
-      </div>
-    </main>
+      }}
+    >
+      {/* ambient gradient layer */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'radial-gradient(ellipse 100% 50% at 50% 0%, rgba(255,140,42,0.12) 0%, transparent 60%), radial-gradient(ellipse 80% 40% at 100% 30%, rgba(255,77,31,0.06) 0%, transparent 60%), radial-gradient(ellipse 80% 40% at 0% 70%, rgba(95,184,122,0.04) 0%, transparent 60%)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+      {/* noise overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+          pointerEvents: 'none',
+          zIndex: 1,
+          opacity: 0.5,
+          mixBlendMode: 'overlay',
+        }}
+      />
+      {children}
+    </div>
   );
 }

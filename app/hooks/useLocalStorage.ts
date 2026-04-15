@@ -1,31 +1,39 @@
-import { useState, useEffect } from 'react';
+'use client';
 
-export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(initialValue);
-  const [isLoaded, setIsLoaded] = useState(false);
+import { useState, useEffect, useCallback } from 'react';
+import { AppData } from '../types';
+import { loadData, saveData, defaultData, wipeLegacy, STORAGE_KEY } from '../lib/storage';
+
+export function useAppData(): [AppData, (updater: (prev: AppData) => AppData) => void, boolean] {
+  const [data, setData] = useState<AppData>(defaultData());
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    try {
-      const item = typeof window !== 'undefined' ? window.localStorage.getItem(key) : null;
-      if (item) {
-        setStoredValue(JSON.parse(item));
-      }
-    } catch (error) {
-      console.error('Failed to read from localStorage:', error);
-    }
-    setIsLoaded(true);
-  }, [key]);
+    wipeLegacy();
+    setData(loadData());
+    setHydrated(true);
+  }, []);
 
-  const setValue = (value: T) => {
-    try {
-      setStoredValue(value);
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(key, JSON.stringify(value));
-      }
-    } catch (error) {
-      console.error('Failed to write to localStorage:', error);
-    }
-  };
+  const update = useCallback((updater: (prev: AppData) => AppData) => {
+    setData(prev => {
+      const next = updater(prev);
+      saveData(next);
+      return next;
+    });
+  }, []);
 
-  return [storedValue, setValue];
+  // Cross-tab sync
+  useEffect(() => {
+    function onStorage(e: StorageEvent) {
+      if (e.key === STORAGE_KEY && e.newValue) {
+        try {
+          setData(JSON.parse(e.newValue));
+        } catch {}
+      }
+    }
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  return [data, update, hydrated];
 }

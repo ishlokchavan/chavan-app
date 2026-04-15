@@ -1,110 +1,106 @@
-@import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700;800&display=swap');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import "tailwindcss";
 
 :root {
-  --ink: #1a1714;
-  --ink-soft: #2e2925;
-  --parchment: #f5f0e8;
-  --parchment-dark: #ede7da;
-  --warm-mid: #8c7d6a;
-  --warm-light: #b5a898;
-  --amber: #d4813a;
-  --amber-glow: #e09455;
-  --green: #4a7c59;
-  --green-light: #6aaa7d;
-  --red: #c0392b;
-  --surface: #231f1b;
-  --surface-raised: #2e2925;
-  --surface-high: #3a3430;
+  --bg: #0a0908;
+  --bg-1: #131110;
+  --bg-2: #1c1916;
+  --bg-3: #252118;
+  --ink: #f5efe6;
+  --ink-dim: #8a827a;
+  --ink-faint: #4a4540;
+  --amber: #ff8c2a;
+  --amber-glow: #ffae5c;
+  --ember: #ff4d1f;
+  --gold: #f5c542;
+  --moss: #5fb87a;
+  --line: rgba(245, 239, 230, 0.08);
+  --line-strong: rgba(245, 239, 230, 0.16);
 }
 
-html {
-  scroll-behavior: smooth;
-  background-color: var(--ink);
-  color: var(--parchment);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  background: #000;
+  color: var(--ink);
+  font-family: 'Geist', sans-serif;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  background-color: var(--ink);
-  color: var(--parchment);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  min-height: 100dvh;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 50% 0%, #1a1410 0%, transparent 50%), #000;
 }
 
-.font-serif {
-  font-family: 'DM Serif Display', Georgia, serif;
+/* === Animations === */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
 }
 
-/* Animated gradient background */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(ellipse at 20% 20%, rgba(212,129,58,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 80%, rgba(74,124,89,0.04) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 0;
+@keyframes flicker {
+  0%, 100% { transform: scale(1) rotate(-1deg); }
+  25% { transform: scale(1.04) rotate(1deg); }
+  50% { transform: scale(0.98) rotate(-0.5deg); }
+  75% { transform: scale(1.02) rotate(0.8deg); }
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--ink); }
-::-webkit-scrollbar-thumb { background: var(--surface-high); border-radius: 2px; }
-
-/* Transitions */
-button, a {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
-/* Pillar card press animation */
-.pillar-card {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.pillar-card:active {
-  transform: scale(0.97);
+@keyframes burst {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
 }
 
-/* Fade in animation */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.fade-up {
-  animation: fadeUp 0.4s ease forwards;
+@keyframes pop {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
-.fade-up-1 { animation-delay: 0.05s; opacity: 0; }
-.fade-up-2 { animation-delay: 0.1s; opacity: 0; }
-.fade-up-3 { animation-delay: 0.15s; opacity: 0; }
-.fade-up-4 { animation-delay: 0.2s; opacity: 0; }
-.fade-up-5 { animation-delay: 0.25s; opacity: 0; }
-
-/* Checkmark pop animation */
-@keyframes checkPop {
-  0% { transform: scale(0.5); opacity: 0; }
-  60% { transform: scale(1.1); }
-  100% { transform: scale(1); opacity: 1; }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.check-pop {
-  animation: checkPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+.fade-in {
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.fade-in:nth-child(1) { animation-delay: 0.05s; }
+.fade-in:nth-child(2) { animation-delay: 0.15s; }
+.fade-in:nth-child(3) { animation-delay: 0.25s; }
+.fade-in:nth-child(4) { animation-delay: 0.35s; }
+.fade-in:nth-child(5) { animation-delay: 0.45s; }
+.fade-in:nth-child(6) { animation-delay: 0.55s; }
+.fade-in:nth-child(7) { animation-delay: 0.65s; }
+.fade-in:nth-child(8) { animation-delay: 0.75s; }
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: burst 0.8s ease-out forwards;
+  z-index: 50;
 }
 
-/* Divider */
-.divider {
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--surface-high), transparent);
-}
+/* hide scrollbar */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
