@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { ThemeProvider } from "./components/ThemeProvider";
 import "./globals.css";
 
 const APP_NAME = "Chavan";
-const APP_DESCRIPTION = "You're just a man. Improve every day.";
+const APP_DESCRIPTION = "A daily framework for self-improvement.";
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -43,7 +42,7 @@ export default function RootLayout({
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </head>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        {children}
       </body>
     </html>
   );

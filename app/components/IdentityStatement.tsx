@@ -2,13 +2,21 @@
 
 export function IdentityStatement() {
   return (
-    <div className="bg-white rounded-lg p-6 border-2 border-gray-300 space-y-3 text-center text-sm leading-relaxed">
-      <p className="font-bold text-base text-black">Chavan — You're just a man.</p>
-      <p className="text-black">Improve your body.</p>
-      <p className="text-black">Improve your mind.</p>
-      <p className="text-black">Build something.</p>
-      <p className="text-black">Strengthen relationships.</p>
-      <p className="font-semibold pt-2 text-black">Repeat daily.</p>
+    <div className="bg-gray-900 rounded-xl p-8 space-y-4 text-center">
+      <p className="text-white text-sm font-light leading-relaxed">
+        <span className="font-semibold">Chavan</span> — a framework for self-improvement
+      </p>
+      <div className="w-1 h-1 bg-gray-700 mx-auto"></div>
+      <div className="space-y-3 text-gray-300 text-xs font-light">
+        <p>Strengthen your body.</p>
+        <p>Expand your mind.</p>
+        <p>Build meaningful work.</p>
+        <p>Deepen your relationships.</p>
+      </div>
+      <div className="w-1 h-1 bg-gray-700 mx-auto"></div>
+      <p className="text-white text-xs font-medium tracking-wide uppercase">
+        Repeat daily.
+      </p>
     </div>
   );
 }

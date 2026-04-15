@@ -23,18 +23,20 @@ export function WeeklyProgress({ records }: WeeklyProgressProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-bold text-black">Weekly Progress</h2>
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-600">
+        Last 7 Days
+      </h3>
       <div className="grid grid-cols-7 gap-2">
         {last7Days.map(({ date, record, dayLabel }) => (
           <div key={date} className="text-center">
-            <p className="text-xs font-semibold mb-2 text-gray-700">{dayLabel}</p>
+            <p className="text-xs font-medium text-gray-600 mb-2">{dayLabel}</p>
             <div
-              className={`h-12 rounded-lg border-2 flex items-center justify-center font-bold transition-all ${
+              className={`h-14 rounded-lg border transition-all flex items-center justify-center font-semibold ${
                 record === undefined
-                  ? 'border-gray-400 bg-gray-100 text-gray-600'
+                  ? 'border-gray-200 bg-gray-50 text-gray-400'
                   : record.isSuccessful
-                  ? 'border-green-600 bg-green-500 text-white'
-                  : 'border-red-600 bg-red-500 text-white'
+                  ? 'border-green-600 bg-green-50 text-green-700'
+                  : 'border-red-600 bg-red-50 text-red-700'
               }`}
             >
               {record === undefined ? '—' : record.isSuccessful ? '✓' : '✗'}

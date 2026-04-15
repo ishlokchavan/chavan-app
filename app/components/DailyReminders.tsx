@@ -10,19 +10,19 @@ export function DailyReminders() {
 
     // Morning reminder (6 AM - 12 PM)
     if (hour >= 6 && hour < 12) {
-      setReminder('Win the day. Build the man.');
+      setReminder('Build something meaningful today.');
     }
     // Night reminder (6 PM - 11 PM)
     else if (hour >= 18 && hour < 23) {
-      setReminder('Did you improve today?');
+      setReminder('How did you perform today?');
     }
   }, []);
 
   if (!reminder) return null;
 
   return (
-    <div className="bg-white rounded-lg p-4 text-center border-2 border-gray-300">
-      <p className="font-semibold text-sm text-black">{reminder}</p>
+    <div className="bg-gray-50 rounded-xl p-5 text-center border border-gray-200">
+      <p className="text-sm text-gray-700 font-light">{reminder}</p>
     </div>
   );
 }

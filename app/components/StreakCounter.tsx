@@ -9,17 +9,21 @@ export function StreakCounter({ currentStreak, totalSuccessfulDays }: StreakCoun
   return (
     <div className="grid grid-cols-2 gap-4">
       {/* Current Streak */}
-      <div className="bg-black text-white rounded-lg p-6 text-center">
-        <p className="text-sm font-semibold opacity-90 mb-2">STREAK</p>
-        <p className="text-5xl font-bold">{currentStreak}</p>
-        <p className="text-xs mt-3 opacity-75">days</p>
+      <div className="bg-gray-900 text-white rounded-xl p-6">
+        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">
+          Current Streak
+        </p>
+        <p className="text-6xl font-light mb-2">{currentStreak}</p>
+        <p className="text-sm text-gray-400">consecutive days</p>
       </div>
 
       {/* Total Successful Days */}
-      <div className="border-2 border-black rounded-lg p-6 text-center bg-white">
-        <p className="text-sm font-semibold text-black mb-2">TOTAL</p>
-        <p className="text-5xl font-bold text-black">{totalSuccessfulDays}</p>
-        <p className="text-xs mt-3 text-gray-700">successful days</p>
+      <div className="border border-gray-200 rounded-xl p-6 bg-gray-50">
+        <p className="text-xs font-semibold uppercase tracking-widest text-gray-600 mb-4">
+          Total Days
+        </p>
+        <p className="text-6xl font-light text-gray-900 mb-2">{totalSuccessfulDays}</p>
+        <p className="text-sm text-gray-600">completed</p>
       </div>
     </div>
   );
