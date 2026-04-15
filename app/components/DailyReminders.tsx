@@ -2,27 +2,58 @@
 
 import { useEffect, useState } from 'react';
 
+const MORNING_PHRASES = [
+  'What will you build today?',
+  'The day is blank. Fill it well.',
+  'A strong day starts with intention.',
+];
+const EVENING_PHRASES = [
+  'How did you show up today?',
+  'Reflect before you rest.',
+  'Every day counts. Did this one?',
+];
+
 export function DailyReminders() {
   const [reminder, setReminder] = useState('');
+  const [time, setTime] = useState('');
 
   useEffect(() => {
     const hour = new Date().getHours();
+    const phrases = hour >= 6 && hour < 12
+      ? MORNING_PHRASES
+      : hour >= 18 && hour < 23
+      ? EVENING_PHRASES
+      : [];
 
-    // Morning reminder (6 AM - 12 PM)
-    if (hour >= 6 && hour < 12) {
-      setReminder('Build something meaningful today.');
-    }
-    // Night reminder (6 PM - 11 PM)
-    else if (hour >= 18 && hour < 23) {
-      setReminder('How did you perform today?');
+    if (phrases.length > 0) {
+      const idx = new Date().getDate() % phrases.length;
+      setReminder(phrases[idx]);
+      setTime(hour >= 6 && hour < 12 ? 'Morning' : 'Evening');
     }
   }, []);
 
   if (!reminder) return null;
 
   return (
-    <div className="bg-gray-50 rounded-lg p-5 text-center border border-gray-200">
-      <p className="text-sm text-gray-700 font-light">{reminder}</p>
+    <div className="fade-up fade-up-1" style={{
+      padding: '14px 18px',
+      borderRadius: '10px',
+      background: 'transparent',
+      border: '1px solid var(--surface-high)',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+    }}>
+      <div style={{
+        width: '4px',
+        height: '4px',
+        borderRadius: '50%',
+        background: 'var(--amber)',
+        flexShrink: 0,
+      }} />
+      <p style={{ fontSize: '13px', color: 'var(--warm-light)', fontWeight: 300, fontStyle: 'italic' }}>
+        {reminder}
+      </p>
     </div>
   );
 }

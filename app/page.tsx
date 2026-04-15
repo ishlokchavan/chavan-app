@@ -7,10 +7,7 @@ import { StreakCounter } from './components/StreakCounter';
 import { WeeklyProgress } from './components/WeeklyProgress';
 import { IdentityStatement } from './components/IdentityStatement';
 import { DailyReminders } from './components/DailyReminders';
-import {
-  AppData,
-  DailyRecord,
-} from './types';
+import { AppData, DailyRecord } from './types';
 import {
   getTodayDate,
   calculateDaySuccess,
@@ -27,14 +24,12 @@ export default function Home() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
-  // Handle PWA install prompt
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
       setShowInstallPrompt(true);
     };
-
     window.addEventListener('beforeinstallprompt', handler);
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
@@ -43,123 +38,150 @@ export default function Home() {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setShowInstallPrompt(false);
-      }
+      if (outcome === 'accepted') setShowInstallPrompt(false);
       setDeferredPrompt(null);
     }
   };
 
-  // Initialize on mount
   useEffect(() => {
     setMounted(true);
-
-    // Ensure today's record exists
     const today = getTodayDate();
     let currentData = { ...data };
     let todayRec = currentData.records.find((r) => r.date === today);
 
     if (!todayRec) {
-      todayRec = {
-        date: today,
-        tasks: createEmptyTasks(),
-        isSuccessful: false,
-      };
+      todayRec = { date: today, tasks: createEmptyTasks(), isSuccessful: false };
       currentData.records.push(todayRec);
       setData(currentData);
     }
-
     setTodayRecord(todayRec);
   }, []);
-
-  if (!mounted || !todayRecord) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
-  }
 
   const handleToggleTask = (taskId: string) => {
     const updated = { ...data };
     const record = updated.records.find((r) => r.date === getTodayDate());
-
     if (record) {
       const task = record.tasks.find((t) => t.id === taskId);
       if (task) {
         task.completed = !task.completed;
         task.completedAt = task.completed ? new Date().toISOString() : undefined;
-
-        // Update success status
         record.isSuccessful = calculateDaySuccess(record.tasks);
-
-        // Update streak and total
         updated.currentStreak = calculateStreak(updated.records);
         updated.totalSuccessfulDays = calculateTotalSuccessfulDays(updated.records);
-
         setData(updated);
-        setTodayRecord(record);
+        setTodayRecord({ ...record });
       }
     }
   };
 
+  if (!mounted || !todayRecord) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100dvh' }}>
+        <div style={{
+          width: '24px', height: '24px',
+          borderRadius: '50%',
+          border: '2px solid var(--surface-high)',
+          borderTopColor: 'var(--amber)',
+          animation: 'spin 0.8s linear infinite',
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <main style={{ minHeight: '100dvh', position: 'relative', zIndex: 1 }}>
       {/* Header */}
-      <header className="border-b border-gray-200 sticky top-0 bg-white z-40 backdrop-blur-sm bg-white/95">
-        <div className="max-w-2xl mx-auto px-4 py-5 flex justify-between items-center">
+      <header style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 40,
+        background: 'rgba(26,23,20,0.9)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom: '1px solid var(--surface-raised)',
+      }}>
+        <div style={{
+          maxWidth: '480px',
+          margin: '0 auto',
+          padding: '16px 20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
           <div>
-            <h1 className="text-2xl font-light tracking-tight">Chavan</h1>
-            <p className="text-xs text-gray-500 mt-1 font-light">Self-improvement framework</p>
+            <h1 className="font-serif" style={{
+              fontSize: '22px',
+              color: 'var(--parchment)',
+              letterSpacing: '0.01em',
+              lineHeight: 1,
+            }}>
+              Chavan
+            </h1>
+            <p style={{
+              fontSize: '10px',
+              color: 'var(--warm-mid)',
+              marginTop: '2px',
+              letterSpacing: '0.08em',
+              fontWeight: 300,
+            }}>
+              Daily framework
+            </p>
           </div>
+
           {showInstallPrompt && (
             <button
               onClick={handleInstall}
-              className="px-4 py-2 bg-gray-900 text-white rounded-lg text-xs font-medium hover:bg-gray-800 transition-colors whitespace-nowrap"
+              style={{
+                padding: '8px 14px',
+                borderRadius: '8px',
+                background: 'var(--amber)',
+                color: 'var(--ink)',
+                fontSize: '12px',
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                letterSpacing: '0.02em',
+              }}
             >
-              Install App
+              Install
             </button>
           )}
         </div>
       </header>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-12">
-        {/* Daily Reminders */}
+      <div style={{
+        maxWidth: '480px',
+        margin: '0 auto',
+        padding: '24px 20px 48px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+      }}>
         <DailyReminders />
+        <DailyTracker tasks={todayRecord.tasks} onToggleTask={handleToggleTask} />
 
-        {/* Daily Tracker Section */}
-        <section className="space-y-6">
-          <DailyTracker
-            tasks={todayRecord.tasks}
-            onToggleTask={handleToggleTask}
-          />
-        </section>
+        {/* Divider */}
+        <div className="divider" />
 
-        {/* Streak Counter Section */}
-        <section className="space-y-4">
-          <StreakCounter
-            currentStreak={data.currentStreak}
-            totalSuccessfulDays={data.totalSuccessfulDays}
-          />
-        </section>
-
-        {/* Weekly Progress Section */}
-        <section className="space-y-4">
-          <WeeklyProgress records={data.records} />
-        </section>
-
-        {/* Identity Statement Section */}
-        <section className="space-y-4">
-          <IdentityStatement />
-        </section>
+        <StreakCounter
+          currentStreak={data.currentStreak}
+          totalSuccessfulDays={data.totalSuccessfulDays}
+        />
+        <WeeklyProgress records={data.records} />
+        <IdentityStatement />
 
         {/* Footer */}
-        <footer className="text-center py-8 border-t border-gray-200 mt-8">
-          <p className="text-xs text-gray-500 font-light">
-            © 2026 Chavan. Daily self-improvement.
-          </p>
-        </footer>
+        <p style={{
+          textAlign: 'center',
+          fontSize: '11px',
+          color: 'var(--surface-high)',
+          paddingTop: '8px',
+          letterSpacing: '0.06em',
+        }}>
+          © 2026 Chavan
+        </p>
       </div>
     </main>
   );

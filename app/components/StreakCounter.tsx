@@ -7,23 +7,77 @@ interface StreakCounterProps {
 
 export function StreakCounter({ currentStreak, totalSuccessfulDays }: StreakCounterProps) {
   return (
-    <div className="grid grid-cols-2 gap-4">
-      {/* Current Streak */}
-      <div className="bg-gray-900 text-white rounded-lg p-6">
-        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-6">
-          Current Streak
+    <div className="fade-up fade-up-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+      {/* Streak */}
+      <div style={{
+        padding: '22px 20px',
+        borderRadius: '14px',
+        background: 'var(--surface)',
+        border: '1px solid var(--surface-high)',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute',
+          bottom: '-10px',
+          right: '-10px',
+          width: '80px',
+          height: '80px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(212,129,58,0.12) 0%, transparent 70%)',
+        }} />
+        <p style={{
+          fontSize: '10px',
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: 'var(--warm-mid)',
+          fontWeight: 500,
+          marginBottom: '12px',
+        }}>
+          Streak
         </p>
-        <p className="text-5xl font-light mb-2">{currentStreak}</p>
-        <p className="text-xs text-gray-400">consecutive days</p>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+          <span className="font-serif" style={{ fontSize: '48px', lineHeight: 1, color: 'var(--amber)', letterSpacing: '-2px' }}>
+            {currentStreak}
+          </span>
+          <span style={{ fontSize: '13px', color: 'var(--warm-mid)' }}>days</span>
+        </div>
       </div>
 
-      {/* Total Successful Days */}
-      <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
-        <p className="text-xs font-semibold uppercase tracking-widest text-gray-600 mb-6">
-          Total Days
+      {/* Total */}
+      <div style={{
+        padding: '22px 20px',
+        borderRadius: '14px',
+        background: 'var(--surface)',
+        border: '1px solid var(--surface-high)',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute',
+          bottom: '-10px',
+          right: '-10px',
+          width: '80px',
+          height: '80px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(74,124,89,0.08) 0%, transparent 70%)',
+        }} />
+        <p style={{
+          fontSize: '10px',
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: 'var(--warm-mid)',
+          fontWeight: 500,
+          marginBottom: '12px',
+        }}>
+          Total wins
         </p>
-        <p className="text-5xl font-light text-gray-900 mb-2">{totalSuccessfulDays}</p>
-        <p className="text-xs text-gray-600">completed</p>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+          <span className="font-serif" style={{ fontSize: '48px', lineHeight: 1, color: 'var(--parchment)', letterSpacing: '-2px' }}>
+            {totalSuccessfulDays}
+          </span>
+          <span style={{ fontSize: '13px', color: 'var(--warm-mid)' }}>days</span>
+        </div>
       </div>
     </div>
   );
