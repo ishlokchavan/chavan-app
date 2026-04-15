@@ -104,20 +104,20 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
+    <main className="min-h-screen bg-white text-black">
       {/* Header */}
-      <header className="border-b border-gray-300 dark:border-gray-700 sticky top-16 bg-white dark:bg-black z-40 pt-4 pb-4">
-        <div className="max-w-2xl mx-auto px-4 flex justify-between items-center">
+      <header className="border-b-2 border-gray-300 sticky top-0 bg-white z-40 pt-6 pb-4 fixed w-full">
+        <div className="max-w-2xl mx-auto px-4 flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Chavan</h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <h1 className="text-3xl font-bold tracking-tight text-black">Chavan</h1>
+            <p className="text-sm text-gray-700 mt-1">
               You're just a man. Improve every day.
             </p>
           </div>
           {showInstallPrompt && (
             <button
               onClick={handleInstall}
-              className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg text-sm font-semibold whitespace-nowrap ml-4"
+              className="px-3 py-2 bg-black text-white rounded-lg text-xs font-semibold whitespace-nowrap ml-4 hover:bg-gray-800"
             >
               📱 Install
             </button>
@@ -125,8 +125,8 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
+      {/* Content with top padding for fixed header */}
+      <div className="max-w-2xl mx-auto px-4 py-6 mt-28 space-y-8">
         {/* Daily Reminders */}
         <DailyReminders />
 

@@ -2,13 +2,13 @@
 
 export function IdentityStatement() {
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 rounded-lg p-6 border border-gray-300 dark:border-gray-700 space-y-2 text-center text-sm leading-relaxed">
-      <p className="font-bold text-base">Chavan — You're just a man.</p>
-      <p>Improve your body.</p>
-      <p>Improve your mind.</p>
-      <p>Build something.</p>
-      <p>Strengthen relationships.</p>
-      <p className="font-semibold pt-2">Repeat daily.</p>
+    <div className="bg-white rounded-lg p-6 border-2 border-gray-300 space-y-3 text-center text-sm leading-relaxed">
+      <p className="font-bold text-base text-black">Chavan — You're just a man.</p>
+      <p className="text-black">Improve your body.</p>
+      <p className="text-black">Improve your mind.</p>
+      <p className="text-black">Build something.</p>
+      <p className="text-black">Strengthen relationships.</p>
+      <p className="font-semibold pt-2 text-black">Repeat daily.</p>
     </div>
   );
 }
