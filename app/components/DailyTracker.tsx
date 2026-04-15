@@ -36,8 +36,8 @@ export function DailyTracker({ tasks, onToggleTask }: DailyTrackerProps) {
               onClick={() => onToggleTask(task.id)}
               className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                 task.completed
-                  ? 'border-black dark:border-white bg-black dark:bg-white text-white dark:text-black'
-                  : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-black dark:text-white hover:border-black dark:hover:border-white'
+                  ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                  : 'border-gray-300 bg-white text-black dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:border-black dark:hover:border-white'
               }`}
             >
               <div className="text-3xl mb-2">{pillar?.emoji}</div>
